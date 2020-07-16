@@ -8,7 +8,6 @@ class eSocketNotifier;
 
 class eDVBAudio: public iObject
 {
-	E_DECLARE_PRIVATE(eDVBAudio);
 
 	DECLARE_REF(eDVBAudio);
 private:

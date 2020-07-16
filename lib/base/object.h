@@ -11,17 +11,6 @@
 
 typedef int RESULT;
 
-#define E_DECLARE_PRIVATE(Class)		\
-	class Private;				\
-	Private * const d;			\
-
-#define E_DECLARE_PUBLIC(Class)			\
-	Class * const q;
-
-#define E_DISABLE_COPY(Class)			\
-	Class(const Class &) = delete;		\
-	Class &operator=(const Class &) = delete;
-
 class iObject
 {
 private:
