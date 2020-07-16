@@ -8,6 +8,8 @@ class eSocketNotifier;
 
 class eDVBAudio: public iObject
 {
+	E_DECLARE_PRIVATE(eDVBAudio)
+
 	DECLARE_REF(eDVBAudio);
 private:
 	ePtr<eDVBDemux> m_demux;
@@ -24,7 +26,10 @@ public:
 	void unfreeze();
 	int getPTS(pts_t &now);
 	virtual ~eDVBAudio();
+        void setSTCValidState(int state);
 };
+
+class eDeviceEventManager;
 
 class eDVBVideo: public iObject, public sigc::trackable
 {
@@ -36,6 +41,14 @@ private:
 	int m_is_slow_motion, m_is_fast_forward, m_is_freezed;
 	ePtr<eSocketNotifier> m_sn;
 	void video_event(int what);
+#if defined(__aarch64__)
+	int m_fd_amvideoPoll;
+	ePtr<eSocketNotifier> m_sn_amvideoPoll;
+	void amvideo_event(int);
+
+	eDeviceEventManager *m_evtMgr;
+	void udev_event(stringMap msg);
+#endif
 	sigc::signal1<void, struct iTSMPEGDecoder::videoEvent> m_event;
 	int m_width, m_height, m_framerate, m_aspect, m_progressive, m_gamma;
 	static int readApiSize(int fd, int &xres, int &yres, int &aspect);
@@ -70,6 +83,7 @@ public:
 	eDVBPCR(eDVBDemux *demux, int dev);
 	int startPid(int pid);
 	void stop();
+	void restart();
 	virtual ~eDVBPCR();
 };
 
