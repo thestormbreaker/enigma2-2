@@ -424,14 +424,14 @@ class TerrestrialTransponderSearchSupport:
 						parm.system = 'DVB-T2' in data[1] and parm.System_DVB_T_T2 or parm.System_DVB_T
 						parm.plp_id = 0
 						self.__tlist.append(parm)
-					tmpstr = _("Try to find used transponders in terrestrial network... please wait...")
-					tmpstr += "\n\n"
+					tmpstr = _("Try to find used transponders in terrestrial network... please wait...") + "\n\n"
 					if 'MODE' in line:
-						tmpstr += data[3]
-						tmpstr += " kHz "
+						tmpstr += data[3] + " kHz"
 					else:
-						tmpstr += _(line)
-			self.terrestrial_search_session["text"].setText(tmpstr)
+						title = _("Sundtek - hardware blind scan in progress.\nPlease wait(3-20 min) for the scan to finish.")
+						if "Succeeded this device supports Hardware Blindscan" in line: 
+							tmpstr += title
+					self.terrestrial_search_session["text"].setText(tmpstr)
 		else:
 			self.terrestrial_search_data += str
 
@@ -1817,28 +1817,29 @@ class ScanSimple(ConfigListScreen, Screen, CableTransponderSearchSupport, Terres
 				networks.discard(self.known_networks)
 
 				tlist = [ ]
-				if nim.isCompatible("DVB-S"):
-					# get initial transponders for each satellite to be scanned
-					for sat in networks:
-						getInitialTransponderList(tlist, sat[0], n.nim_index)
-				elif nim.isCompatible("DVB-C"):
-					if config.Nims[nim.slot].cable.scan_type.value == "provider":
-						getInitialCableTransponderList(tlist, nim.slot)
-					else:
-						action = SEARCH_CABLE_TRANSPONDERS
-						networkid = config.Nims[nim.slot].cable.scan_networkid.value
-				elif nim.isCompatible("DVB-T"):
-					skip_t2 = False
-					if SystemInfo["Blindscan_t2_available"]:
-						skip_t2 = True
-						if nim.canBeCompatible("DVB-T2"):
-							if len(self.terrestrialTransponderGetCmd(nim.slot)):
-								action = SEARCH_TERRESTRIAL2_TRANSPONDERS
-							else:
-								skip_t2 = False
-					getInitialTerrestrialTransponderList(tlist, nimmanager.getTerrestrialDescription(nim.slot), skip_t2=skip_t2)
-				elif nim.isCompatible("ATSC"):
-					getInitialATSCTransponderList(tlist, nim.slot)
+				if nim.isSupported():
+					if nim.isCompatible("DVB-S"):
+						# get initial transponders for each satellite to be scanned
+						for sat in networks:
+							getInitialTransponderList(tlist, sat[0], n.nim_index)
+					if nim.isCompatible("DVB-C"):
+						if config.Nims[nim.slot].cable.scan_type.value == "provider":
+							getInitialCableTransponderList(tlist, nim.slot)
+						else:
+							action = SEARCH_CABLE_TRANSPONDERS
+							networkid = config.Nims[nim.slot].cable.scan_networkid.value
+					if nim.isCompatible("DVB-T"):
+						skip_t2 = False
+						if SystemInfo["Blindscan_t2_available"]:
+							skip_t2 = True
+							if nim.canBeCompatible("DVB-T2"):
+								if len(self.terrestrialTransponderGetCmd(nim.slot)):
+									action = SEARCH_TERRESTRIAL2_TRANSPONDERS
+								else:
+									skip_t2 = False
+						getInitialTerrestrialTransponderList(tlist, nimmanager.getTerrestrialDescription(nim.slot), skip_t2=skip_t2)
+					if nim.isCompatible("ATSC"):
+						getInitialATSCTransponderList(tlist, nim.slot)
 				else:
 					assert False
 
