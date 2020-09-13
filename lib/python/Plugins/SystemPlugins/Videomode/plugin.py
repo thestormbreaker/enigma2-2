@@ -3,7 +3,6 @@ from Plugins.Plugin import PluginDescriptor
 from Components.SystemInfo import SystemInfo
 from Components.ConfigList import ConfigListScreen
 from Components.config import getConfigListEntry, config, ConfigNothing
-from Components.Label import Label
 from Components.Sources.StaticText import StaticText
 
 from Components.DisplayHardware import DisplayHardware
