@@ -41,7 +41,7 @@ class VideoSetup(Screen, ConfigListScreen):
 		self["description"] = Label("")
 
 		self.createSetup()
-		self.grabLastGoodMode()
+#		self.grabLastGoodMode()
 		self.onLayoutFinish.append(self.layoutFinished)
 
 	def layoutFinished(self):
