@@ -245,9 +245,9 @@ class VideoHardware:
 				self.has24pAvailable = False
 			else:
 				try:
-				open("/proc/stb/video/videomode_24hz", "w").write(mode_24)
-			except IOError:
-				print "[VideoHardware] cannot open /proc/stb/video/videomode_24hz"
+					open("/proc/stb/video/videomode_24hz", "w").write(mode_24)
+				except IOError:
+					print "[VideoHardware] cannot open /proc/stb/video/videomode_24hz"
 
 		self.updateAspect(None)
 
