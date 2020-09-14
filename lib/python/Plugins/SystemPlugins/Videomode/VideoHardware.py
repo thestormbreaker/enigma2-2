@@ -171,7 +171,7 @@ class VideoHardware:
 					self.modes_preferred = modes.split(" ")
 				except IOError:
 					print "[VideoHardware] reading preferred modes failed, using all video modes"
-					seld.modes_preferred = self.modes_available
+					self.modes_preferred = self.modes_available
 
 			if len(self.modes_preferred) <= 1:
 				self.modes_preferred = self.modes_available
@@ -245,9 +245,9 @@ class VideoHardware:
 				self.has24pAvailable = False
 			else:
 				try:
-				open("/proc/stb/video/videomode_24hz", "w").write(mode_24)
-			except IOError:
-				print "[VideoHardware] cannot open /proc/stb/video/videomode_24hz"
+					open("/proc/stb/video/videomode_24hz", "w").write(mode_24)
+				except IOError:
+					print "[VideoHardware] cannot open /proc/stb/video/videomode_24hz"
 
 		self.updateAspect(None)
 
