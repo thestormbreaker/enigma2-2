@@ -84,7 +84,11 @@ class VideoHardware:
 	else:
 		modes["DVI"] = ["720p", "1080p", "2160p", "2160p30", "1080i", "576p", "480p", "576i", "480i"]
 	modes["DVI-PC"] = ["PC"]
-
+	
+	if HardwareInfo().get_device_name() in  ("one"):
+		modes["HDMI"] = ["1080p", "720p", "2160P", "2160p30", "1080i"]
+		widescreen_modes = {"1080p", "720p", "2160P", "2160p30", "1080i"}
+			
 	def getOutputAspect(self):
 		ret = (16,9)
 		port = config.av.videoport.value
@@ -155,12 +159,19 @@ class VideoHardware:
 
 	def readPreferredModes(self):
 		if config.av.edid_override.value == False:
-			try:
-				modes = open("/proc/stb/video/videomode_preferred").read()[:-1]
-				self.modes_preferred = modes.split(' ')
-			except IOError:
-				print "[VideoHardware] reading preferred modes failed, using all video modes"
-				self.modes_preferred = self.modes_available
+			if HardwareInfo().get_device_name() in  ("one"):
+				f = open("/sys/class//amhdmitx/amhdmitx0/disp_cap")
+				modes = f.read()[:-1]
+				f.close()
+				self.modes_preferred = modes.splitlines()
+				print "[AVSwitch] reading edid modes: ", self.modes_preferred
+			else:
+				try:
+					modes = open("/proc/stb/video/videomode_preferred").read()[:-1]
+					self.modes_preferred = modes.split(" ")
+				excepr IOError:
+					print "[VideoHardware] reading preferred modes failed, using all video modes"
+					seld.modes_preferred = self.modes_available
 
 			if len(self.modes_preferred) <= 1:
 				self.modes_preferred = self.modes_available
@@ -205,7 +216,15 @@ class VideoHardware:
 			mode_24 = mode_60
 			if force == 50:
 				mode_24 = mode_50
-
+				
+		if HardwareInfo().get_device_name() in  ("one"):
+			f = open("/sys/class/display/mode", "w")
+			f.write('576i50hz')
+			f.close()
+			amlmode = mode + rate.lower()
+			f = open("/sys/class/display/mode", "w")
+			f.write(amlmode)
+			f.close()
 		try:
 			open("/proc/stb/video/videomode_50hz", "w").write(mode_50)
 			open("/proc/stb/video/videomode_60hz", "w").write(mode_60)
@@ -222,7 +241,10 @@ class VideoHardware:
 			print "[VideoHardware] writing initial videomode to /etc/videomode failed."
 
 		if SystemInfo["Has24hz"]:
-			try:
+			if HardwareInfo().get_device_name() in ("one"):
+				self.has24pAvailable = False
+			else:
+				try:
 				open("/proc/stb/video/videomode_24hz", "w").write(mode_24)
 			except IOError:
 				print "[VideoHardware] cannot open /proc/stb/video/videomode_24hz"
