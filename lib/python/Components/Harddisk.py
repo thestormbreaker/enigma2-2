@@ -919,5 +919,34 @@ def internalHDDNotSleeping(external=False):
 				if hdd[1].idle_running and hdd[1].max_idle_time and not hdd[1].isSleeping():
 					state = True
 	return state
+DEVICEDB = \
+	{"one":
+	 	{
+			"/devices/platform/ff500000.dwc3/xhci-hcd.0.auto/usb1": _("USB 2.0 (Back, inner)"),
+			"/devices/platform/ff500000.dwc3/xhci-hcd.0.auto/usb2": _("USB 3.0 (Back, outer)"),
+		},
+	}
 
+def mountDreamboxData(self):
+	Log.d("Mounting Dreambox Data-Partition")
+	device = None
+	for d in [ "/dev/disk/by-label/dreambox-data", "/dev/dreambox-data"]:
+		if fileExists(d):
+			device = d
+			break
+	if not device:
+		Log.w("dreambox-data partition does not exist!")
+		return
+	mountpoint = "/data"
+	if Util.findInFstab(device, mountpoint):
+		Log.i("dreambox-data partition already available")
+		return
+	Log.w("Adding dreambox data partition to fstab")
+	extopts = ["x-systemd.automount", "nofail"]
+	if not fileExists(mountpoint):
+		createDir(mountpoint)
+	if fileExists(device):
+		self.modifyFstabEntry(device, mountpoint, extopts=extopts)
+	self._reloadSystemdForData()	  	
+	
 SystemInfo["ext4"] = isFileSystemSupported("ext4")
