@@ -169,7 +169,7 @@ class VideoHardware:
 				try:
 					modes = open("/proc/stb/video/videomode_preferred").read()[:-1]
 					self.modes_preferred = modes.split(" ")
-				excepr IOError:
+				except IOError:
 					print "[VideoHardware] reading preferred modes failed, using all video modes"
 					seld.modes_preferred = self.modes_available
 
