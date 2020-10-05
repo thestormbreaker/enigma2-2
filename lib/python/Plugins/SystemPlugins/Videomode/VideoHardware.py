@@ -86,8 +86,8 @@ class VideoHardware:
 	modes["DVI-PC"] = ["PC"]
 	
 	if HardwareInfo().get_device_name() in  ("one"):
-		modes["HDMI"] = ["1080p", "720p", "2160P", "2160p30", "1080i"]
-		widescreen_modes = {"1080p", "720p", "2160P", "2160p30", "1080i"}
+		modes["HDMI"] = ["1080p", "720p", "2160p", "2160p30", "1080i"]
+		widescreen_modes = {"1080p", "720p", "2160p", "2160p30", "1080i"}
 			
 	def getOutputAspect(self):
 		ret = (16,9)
